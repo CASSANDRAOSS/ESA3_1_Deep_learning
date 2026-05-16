@@ -185,3 +185,27 @@ h2 {
 .dropdown.open .dropdown-content {
     display: block;
 }
+
+.training-box {
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-top: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.training-box h3 {
+    margin-top: 0;
+    color: #222;
+}
+
+#trainingStatus {
+    margin-bottom: 12px;
+    font-style: italic;
+    color: #666;
+}
+
+#trainingChart {
+    max-height: 280px;
+}
