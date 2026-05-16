@@ -236,7 +236,7 @@ async function trainModel(X, y) {
 
                 if (trainingStatusDiv) {
                     trainingStatusDiv.textContent =
-                        `Training läuft... Epoche ${currentEpoch}/50 | Loss: ${logs.loss.toFixed(4)}`;
+                        `Training läuft... Epoche ${currentEpoch}/20 | Loss: ${logs.loss.toFixed(4)}`;
                 }
 
                 if (trainingChart) {
