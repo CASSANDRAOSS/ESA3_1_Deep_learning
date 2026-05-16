@@ -4,22 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Next Word Prediction LSTM</title>
+
     <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js für den Trainingsverlauf -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- TensorFlow.js für das LSTM-Modell -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.12.0/dist/tf.min.js"></script>
 </head>
+
 <body>
 
-    <!-- Header mit Icon -->
     <header class="header">
-        <img src="assets/BackgroundEraser_20230129_150748725.png" alt="Icon" class="header-icon">
-        <h1>Next Word Prediction (LSTM)</h1>
+        <img src="assets/BackgroundEraser_20230129_150748725.png" alt="Projekt-Icon" class="header-icon">
+        <h1>Next Word Prediction mit LSTM</h1>
     </header>
 
-    <!-- Hauptbereich -->
     <section class="main-section">
 
-        <textarea id="inputText" rows="5" placeholder="Gib hier einen Text ein...sobald bei Ergebnisse Daten stehen, bin ich dafür bereit..."></textarea>
+        <p class="intro-text">
+            Diese Anwendung trainiert ein einfaches Language Model im Browser.
+            Nach dem Training kann das Modell auf Basis von fünf eingegebenen Wörtern
+            das wahrscheinlich nächste Wort vorhersagen.
+        </p>
+
+        <label for="inputText"><strong>Eingabetext</strong></label>
+        <textarea 
+            id="inputText" 
+            rows="5" 
+            placeholder="Bitte mindestens fünf bekannte Wörter eingeben, sobald das Modell bereit ist.">
+        </textarea>
 
         <div class="button-row">
             <button id="predictBtn">Vorhersage</button>
@@ -30,108 +45,126 @@
         </div>
 
         <div id="predictions"></div>
+
         <div id="status">Modell wird geladen...</div>
 
         <h2>Ergebnisse</h2>
-        <div id="results"></div>
+
         <div class="training-box">
             <h3>Trainingsverlauf</h3>
             <div id="trainingStatus">Daten werden geladen...</div>
             <canvas id="trainingChart"></canvas>
         </div>
 
+        <div class="results-box">
+            <h3>Evaluation</h3>
+            <div id="results">Die Evaluation erscheint nach dem Training.</div>
+        </div>
 
-        <!-- Dropdown: Hilfe -->
         <div class="dropdown">
             <button class="dropdown-toggle">Hilfe</button>
-            <div class="dropdown-content" class="help-box">
+            <div class="dropdown-content help-box">
                 <h3>Wie benutze ich dieses Language Model?</h3>
                 <ul>
-                    <li><strong>Text eingeben:</strong> Beginne mit einem Wort oder Satz. Es müssen mindestens 5 Wörter eingegeben werden.</li>
-                    <li><strong>Vorhersage:</strong> Zeigt die wahrscheinlichsten nächsten Wörter.</li>
-                    <li><strong>Weiter:</strong> Fügt das wahrscheinlichste Wort an.</li>
-                    <li><strong>Auto:</strong> Generiert bis zu 10 Wörter automatisch.</li>
+                    <li><strong>Text eingeben:</strong> Gib mindestens fünf vollständige Wörter ein.</li>
+                    <li><strong>Vorhersage:</strong> Zeigt die wahrscheinlichsten nächsten Wörter mit Wahrscheinlichkeiten.</li>
+                    <li><strong>Wort auswählen:</strong> Ein Klick auf ein vorgeschlagenes Wort fügt es an den Text an.</li>
+                    <li><strong>Weiter:</strong> Fügt automatisch das wahrscheinlichste Wort hinzu.</li>
+                    <li><strong>Auto:</strong> Generiert automatisch bis zu zehn weitere Wörter.</li>
                     <li><strong>Stopp:</strong> Unterbricht die automatische Generierung.</li>
-                    <li><strong>Reset:</strong> Setzt Text und Vorhersagen zurück.</li>
+                    <li><strong>Reset:</strong> Setzt Eingabe und Vorhersagen zurück. Das trainierte Modell bleibt erhalten.</li>
                 </ul>
 
-                
+                <p>
+                    Wichtig: Das Modell kann nur mit Wörtern arbeiten, die im Trainingskorpus vorkommen.
+                    Unbekannte Wörter werden abgefangen und als Hinweis angezeigt.
+                </p>
             </div>
         </div>
 
-        <!-- Dropdown: Diskussion -->
         <div class="dropdown">
             <button class="dropdown-toggle">Diskussion</button>
-            <div class="dropdown-content" id="discussion" class="help-box">
+            <div class="dropdown-content help-box" id="discussion">
                 <p>
-            Wenn ein Modell beginnt, Sprache zu lernen, wirkt es ein wenig wie ein Mensch, der sich zum ersten 
-            Mal in einem neuen Themengebiet bewegt: vorsichtig, tastend, aber mit wachsender Sicherheit. 
-            Das LSTM erkennt Muster in den Wortfolgen und versucht, aus ihnen eine Art inneres Verständnis zu 
-            formen. Manche Vorhersagen wirken erstaunlich passend, andere zeigen, wie schnell ein Modell ins Stolpern 
-            geraten kann, wenn der Kontext zu schmal ist. Die Top‑k‑Werte machen sichtbar, dass das Modell zwar nicht 
-            immer das exakte nächste Wort trifft, aber oft eine plausible Richtung erkennt. Die Perplexity zeigt, wie 
-            viel Unsicherheit noch im System steckt, ein Hinweis darauf, dass der Trainingskorpus begrenzt war. 
-            Gleichzeitig wird deutlich, wie sensibel solche Modelle auf Datenmenge und -qualität reagieren. Die 
-            automatische Textgenerierung zeigt, dass rekurrente Netze dazu neigen, sich an vertraute Muster zu klammern, 
-            wenn ihnen die Vielfalt fehlt. Doch gerade diese Grenzen machen sichtbar, wie Sprache funktioniert: 
-            als Zusammenspiel aus Wiederholung, Variation und Erwartung. Das Projekt zeigt, wie maschinelle Modelle 
-            versuchen, Ordnung in sprachliche Abläufe zu bringen, ohne sie je vollständig zu erfassen. 
-            Und vielleicht liegt genau darin ihr Wert, im Versuch, Struktur in etwas zu finden, das immer ein wenig 
-            offen bleibt.
-             </p>
+                    Das LSTM-Modell erkennt Muster in den Wortfolgen des Trainingskorpus und kann daraus plausible nächste Wörter ableiten.
+                    Besonders bei bekannten Formulierungen zeigt sich, dass das Modell häufig eine sinnvolle Richtung findet.
+                    Gleichzeitig wird deutlich, dass die Qualität der Vorhersage stark von Umfang und Qualität der Trainingsdaten abhängt.
+                    Bei unbekannten oder seltenen Wörtern stößt das Modell schnell an Grenzen.
+                    Die Top-k-Werte zeigen, dass das korrekte Wort nicht immer an erster Stelle steht, aber häufig unter mehreren wahrscheinlichen Kandidaten liegt.
+                    Die Perplexity macht sichtbar, wie unsicher das Modell bei der Fortsetzung von Sprache noch ist.
+                    In der automatischen Generierung wiederholt das Modell teilweise vertraute Muster aus den Trainingsdaten.
+                    Dadurch wird auch das Risiko der Datenrekonstruktion sichtbar, insbesondere bei kleinen oder sensiblen Trainingskorpora.
+                    Für produktive Anwendungen müssten Trainingsdaten daher sorgfältig geprüft, anonymisiert und begrenzt werden.
+                    Insgesamt zeigt die Anwendung, wie ein rekurrentes Sprachmodell Sprache nicht versteht, sondern statistische Muster aus Wortfolgen lernt.
+                </p>
             </div>
         </div>
 
-        <!-- Dropdown: Dokumentation -->
         <div class="dropdown">
             <button class="dropdown-toggle">Dokumentation</button>
-            <div class="dropdown-content" id="documentation" class="help-box">
+            <div class="dropdown-content help-box" id="documentation">
+
+                <h3>Technische Umsetzung</h3>
                 <p>
-            Die Anwendung verbindet eine klare Weboberfläche mit einem rekurrenten neuronalen Netz, 
-            das vollständig im Browser ausgeführt wird. HTML und CSS bilden den ruhigen Rahmen, während JavaScript 
-            und TensorFlow.js die eigentliche Logik tragen. Das Modell besteht aus zwei LSTM‑Schichten mit jeweils 
-            100 Einheiten und einer Softmax‑Ausgabe, die die Wahrscheinlichkeitsverteilung über das Vokabular 
-            berechnet. Die Trainingsdaten werden lokal geladen, in Wörter zerlegt und in One‑Hot‑Vektoren übersetzt, 
-            sodass sie als Tensoren verarbeitet werden können. Trainiert wird mit dem Adam‑Optimizer und einem 
-            kategorischen Kreuzentropie‑Loss, der misst, wie weit die Vorhersagen des Modells von der tatsächlichen 
-            Wortfolge entfernt sind. Die Benutzeroberfläche reagiert unmittelbar auf Eingaben und zeigt Vorhersagen, 
-            Statusmeldungen und Evaluationsmetriken direkt an. Alle Berechnungen finden lokal statt, ohne Server oder 
-            externe Dienste, ein kleines, in sich geschlossenes System, das Sprache beobachtet und daraus lernt.
-        </p>
+                    Die Anwendung verbindet eine HTML- und CSS-Oberfläche mit JavaScript und TensorFlow.js.
+                    Das LSTM-Modell wird vollständig im Browser erstellt, trainiert und anschließend für die Wortvorhersage genutzt.
+                    Die Trainingsdaten werden lokal aus einer Textdatei geladen, bereinigt, in Wortsequenzen zerlegt und als One-Hot-Vektoren verarbeitet.
+                </p>
 
-        <p>
-            Im Zentrum der Anwendung steht die Idee, Sprache als Abfolge von Entscheidungen zu betrachten: 
-            Welches Wort folgt auf ein anderes, und warum? Ein LSTM‑Modell eignet sich dafür besonders gut, weil es 
-            nicht nur das aktuelle Wort betrachtet, sondern auch die Spuren der vorherigen Wörter mitführt. Der 
-            Trainingsprozess basiert auf Sequenzen aus fünf Wörtern, aus denen das Modell das nächste Wort 
-            vorhersagen soll. Jedes Wort wird in eine eindeutige Position im Vokabular übersetzt und als One‑Hot‑Vektor 
-            dargestellt, sodass das Modell ausschließlich mit numerischen Mustern arbeitet. Während des Trainings lernt 
-            es, Regelmäßigkeiten in diesen Sequenzen zu erkennen und Wahrscheinlichkeiten für mögliche Fortsetzungen 
-            zu berechnen. Die anschließende Textgenerierung zeigt, wie das Modell diese Wahrscheinlichkeiten nutzt, 
-            um Schritt für Schritt neue Sätze zu formen, manchmal stimmig, manchmal zögerlich. Die Evaluation über 
-            Top‑k‑Accuracy und Perplexity macht sichtbar, wie gut das Modell die Struktur des Trainingskorpus erfasst 
-            hat und wo seine Grenzen liegen. Insgesamt zeigt die Anwendung, wie maschinelle Sprachmodelle funktionieren: 
-            als Systeme, die aus Daten lernen, Muster erkennen und daraus eine eigene, statistische Sicht auf Sprache 
-            entwickeln.
-        </p>
+                <h3>Modellarchitektur</h3>
+                <p>
+                    Das Modell besteht aus zwei gestapelten LSTM-Schichten mit jeweils 100 Units.
+                    Die erste LSTM-Schicht gibt Sequenzen zurück, damit eine zweite rekurrente Schicht folgen kann.
+                    Am Ende steht eine Dense-Schicht mit Softmax-Aktivierung, deren Dimension der Größe des Vokabulars entspricht.
+                    Als Loss-Funktion wird Categorical Cross-Entropy genutzt, trainiert wird mit dem Adam-Optimizer und einer Lernrate von 0.001.
+                </p>
 
-                <h3>Datenschutz & Sicherheit</h3>
-<p>
-    Ein kritisches Ergebnis der Experimente ist das Risiko der Datenrekonstruktion. 
-    Da LSTMs dazu neigen, Sequenzen des Trainingsmaterials "auswendig zu lernen" (Overfitting), 
-    könnten sensible Informationen durch gezielte Wortvorhersagen extrahiert werden. 
-    Dies verdeutlicht, dass Sprachmodelle ohne Anonymisierung der Trainingsdaten 
-    ein erhebliches Datenschutzrisiko darstellen.
-</p>
+                <h3>Experimente mit der Architektur</h3>
+                <p>
+                    Im Rahmen der Umsetzung wurden verschiedene Modellvarianten betrachtet.
+                    Eine einfache LSTM-Schicht lieferte zwar schnellere Trainingszeiten, konnte komplexere Wortfolgen jedoch weniger stabil abbilden.
+                    Die finale Lösung verwendet deshalb ein gestapeltes LSTM mit zwei rekurrenten Schichten und jeweils 100 Units.
+                    Diese Architektur entspricht der Aufgabenstellung und bietet einen sinnvollen Kompromiss zwischen Lernfähigkeit, Trainingsdauer und Ausführbarkeit im Browser.
+                    Die Lernrate 0.001 wurde gewählt, weil das Training damit stabiler verlief als mit einer höheren Lernrate.
+                </p>
+
+                <h3>Evaluation</h3>
+                <p>
+                    Nach dem Training wird berechnet, wie häufig das tatsächlich folgende Wort direkt auf Platz 1 liegt.
+                    Zusätzlich wird geprüft, ob es sich unter den besten 5, 10, 20 oder 100 Vorschlägen befindet.
+                    Ergänzend wird die Perplexity berechnet, um die Unsicherheit des Modells bei der Wortvorhersage sichtbar zu machen.
+                    Der Trainingsverlauf wird mit Loss und Accuracy direkt auf der Seite visualisiert.
+                </p>
+
+                <h3>Interaktion und Fehlerbehandlung</h3>
+                <p>
+                    Die Oberfläche unterstützt Vorhersage, manuelle Auswahl eines vorgeschlagenen Wortes, schrittweise Textgenerierung, automatische Generierung, Stopp und Reset.
+                    Eingaben mit zu wenigen Wörtern oder unbekannten Begriffen werden abgefangen und dem Nutzer als verständliche Meldung angezeigt.
+                    Während des Trainings sind die Interaktionsbuttons deaktiviert, damit keine Vorhersage vor Abschluss des Trainings gestartet wird.
+                </p>
+
+                <h3>Datenschutz und Sicherheit</h3>
+                <p>
+                    Ein kritisches Ergebnis der Experimente ist das Risiko der Datenrekonstruktion.
+                    LSTMs können bei kleinen oder einseitigen Trainingsdaten dazu neigen, Sequenzen aus dem Trainingsmaterial auswendig zu lernen.
+                    Dadurch könnten sensible Informationen durch gezielte Wortvorhersagen teilweise rekonstruiert werden.
+                    Für reale Anwendungen müssten Trainingsdaten daher anonymisiert, geprüft und auf sensible Inhalte untersucht werden.
+                </p>
+
+                <h3>Verwendete Frameworks und Quellen</h3>
+                <ul>
+                    <li><strong>TensorFlow.js:</strong> Erstellung, Training und Ausführung des LSTM-Modells direkt im Browser.</li>
+                    <li><strong>Chart.js:</strong> Visualisierung des Trainingsverlaufs anhand von Loss und Accuracy.</li>
+                    <li><strong>HTML:</strong> Struktur der Benutzeroberfläche.</li>
+                    <li><strong>CSS:</strong> Gestaltung, Layout und visuelle Rückmeldungen.</li>
+                    <li><strong>JavaScript:</strong> Datenverarbeitung, Training, Vorhersage, Evaluation und Interaktion.</li>
+                </ul>
+
             </div>
         </div>
-
-
-        
 
     </section>
 
     <script src="script.js"></script>
 </body>
-
 </html>
