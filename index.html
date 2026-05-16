@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Next Word Prediction LSTM</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.12.0/dist/tf.min.js"></script>
 </head>
 <body>
@@ -34,6 +34,11 @@
 
         <h2>Ergebnisse</h2>
         <div id="results"></div>
+        <div class="training-box">
+            <h3>Trainingsverlauf</h3>
+            <div id="trainingStatus">Daten werden geladen...</div>
+            <canvas id="trainingChart"></canvas>
+        </div>
 
 
         <!-- Dropdown: Hilfe -->
