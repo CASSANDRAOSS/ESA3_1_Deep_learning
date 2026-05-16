@@ -109,6 +109,11 @@
                     Die Anwendung verbindet eine HTML- und CSS-Oberfläche mit JavaScript und TensorFlow.js.
                     Das LSTM-Modell wird vollständig im Browser erstellt, trainiert und anschließend für die Wortvorhersage genutzt.
                     Die Trainingsdaten werden lokal aus einer Textdatei geladen, bereinigt, in Wortsequenzen zerlegt und als One-Hot-Vektoren verarbeitet.
+                    <p>
+    Der ursprüngliche Trainingskorpus wurde reduziert, um die browserbasierte Ausführung performant und interaktiv nutzbar zu halten.
+    Große Wortmengen und ein umfangreiches Vokabular führten durch das verwendete One-Hot-Encoding zu deutlich längeren Trainingszeiten und höherem Speicherverbrauch.
+    Die finale Variante verwendet daher einen kleineren Textausschnitt, der stabile Ergebnisse bei gleichzeitig guter Nutzbarkeit ermöglicht.
+</p>
                 </p>
 
                 <h3>Modellarchitektur</h3>
