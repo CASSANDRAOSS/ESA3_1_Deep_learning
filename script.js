@@ -218,7 +218,7 @@ async function trainModel(X, y) {
     initTrainingChart();
 
     await model.fit(X, y, {
-        epochs: 50,
+        epochs: 20,
         batchSize: 32,
         shuffle: true,
         callbacks: {
