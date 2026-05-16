@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Next Word Prediction LSTM</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.12.0/dist/tf.min.js"></script>
 </head>
 <body>
@@ -18,7 +19,7 @@
     <!-- Hauptbereich -->
     <section class="main-section">
 
-        <textarea id="inputText" rows="5" placeholder="Gib hier einen Text ein..."></textarea>
+        <textarea id="inputText" rows="5" placeholder="Gib hier einen Text ein...sobald bei Ergebnisse Daten stehen, bin ich dafür bereit..."></textarea>
 
         <div class="button-row">
             <button id="predictBtn">Vorhersage</button>
@@ -41,7 +42,7 @@
             <div class="dropdown-content" class="help-box">
                 <h3>Wie benutze ich dieses Language Model?</h3>
                 <ul>
-                    <li><strong>Text eingeben:</strong> Beginne mit einem Wort oder Satz.</li>
+                    <li><strong>Text eingeben:</strong> Beginne mit einem Wort oder Satz. Es müssen mindestens 5 Wörter eingegeben werden.</li>
                     <li><strong>Vorhersage:</strong> Zeigt die wahrscheinlichsten nächsten Wörter.</li>
                     <li><strong>Weiter:</strong> Fügt das wahrscheinlichste Wort an.</li>
                     <li><strong>Auto:</strong> Generiert bis zu 10 Wörter automatisch.</li>
@@ -108,6 +109,15 @@
             als Systeme, die aus Daten lernen, Muster erkennen und daraus eine eigene, statistische Sicht auf Sprache 
             entwickeln.
         </p>
+
+                <h3>Datenschutz & Sicherheit</h3>
+<p>
+    Ein kritisches Ergebnis der Experimente ist das Risiko der Datenrekonstruktion. 
+    Da LSTMs dazu neigen, Sequenzen des Trainingsmaterials "auswendig zu lernen" (Overfitting), 
+    könnten sensible Informationen durch gezielte Wortvorhersagen extrahiert werden. 
+    Dies verdeutlicht, dass Sprachmodelle ohne Anonymisierung der Trainingsdaten 
+    ein erhebliches Datenschutzrisiko darstellen.
+</p>
             </div>
         </div>
 
