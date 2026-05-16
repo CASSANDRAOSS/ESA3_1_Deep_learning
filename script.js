@@ -37,7 +37,7 @@ function setButtonsEnabled(enabled) {
 function cleanText(text) {
     return text
         .toLowerCase()
-        .replace(/[^\wäöüß\s]/g, "")
+        .replace(/[.,!?;:"„“()\-\n]/g, " ")
         .trim()
         .split(/\s+/)
         .filter(word => word.length > 0);
