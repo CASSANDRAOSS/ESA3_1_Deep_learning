@@ -425,7 +425,9 @@ autoBtn.onclick = () => {
             return;
         }
 
-        textArea.value += " " + predictions[0].word;
+        // textArea.value += " " + predictions[0].word;
+        const randomIndex = Math.floor(Math.random() * Math.min(3, predictions.length));
+        textArea.value += " " + predictions[randomIndex].word;
 
         const topPredictions = predictNextWord(textArea.value);
         displayPredictions(topPredictions);
