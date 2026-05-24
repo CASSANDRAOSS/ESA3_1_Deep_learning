@@ -68,18 +68,34 @@
             <div class="dropdown-content help-box">
                 <h3>Wie benutze ich dieses Language Model?</h3>
                 <ul>
-                    <li><strong>Text eingeben:</strong> Gib mindestens fünf vollständige Wörter ein.</li>
-                    <li><strong>Vorhersage:</strong> Zeigt die wahrscheinlichsten nächsten Wörter mit Wahrscheinlichkeiten.</li>
-                    <li><strong>Wort auswählen:</strong> Ein Klick auf ein vorgeschlagenes Wort fügt es an den Text an.</li>
-                    <li><strong>Weiter:</strong> Fügt automatisch das wahrscheinlichste Wort hinzu.</li>
-                    <li><strong>Auto:</strong> Generiert automatisch bis zu zehn weitere Wörter.</li>
-                    <li><strong>Stopp:</strong> Unterbricht die automatische Generierung.</li>
-                    <li><strong>Reset:</strong> Setzt Eingabe und Vorhersagen zurück. Das trainierte Modell bleibt erhalten.</li>
+                    <li><strong>Text eingeben:</strong> Gib mindestens ein vollständiges Wort ein.</li>
+                    <li><strong>Vorhersage:</strong>
+                        Zeigt die wahrscheinlichsten nächsten Wörter mit ihren Wahrscheinlichkeiten.
+                    </li>
+                    <li><strong>Wort auswählen:</strong>
+                        Ein Klick auf ein vorgeschlagenes Wort fügt es direkt an den Text an und startet automatisch eine neue Vorhersage.
+                    </li>
+                    <li><strong>Weiter:</strong>
+                        Übernimmt automatisch ein wahrscheinliches nächstes Wort.
+                    </li>
+                    <li><strong>Auto:</strong>
+                        Generiert automatisch bis zu zehn weitere Wörter.
+                    </li>
+                    <li><strong>Stopp:</strong>
+                        Unterbricht die automatische Textgenerierung.
+                    </li>
+                    <li><strong>Reset:</strong>
+                        Setzt Eingabe und Vorhersagen zurück. Das trainierte Modell bleibt geladen.
+                    </li>
                 </ul>
+                <p>
+                    Das Modell wurde mit dem Märchen <em>Der Froschkönig</em> trainiert.
+                    Dadurch können manche Vorhersagen märchenhaft oder sprachlich ungewöhnlich wirken.
+                </p>
 
                 <p>
-                    Wichtig: Das Modell kann nur mit Wörtern arbeiten, die im Trainingskorpus vorkommen.
-                    Unbekannte Wörter werden abgefangen und als Hinweis angezeigt.
+                    Unbekannte Wörter werden erkannt und als Hinweis angezeigt.
+                    Die Vorhersage wird dennoch fortgesetzt.
                 </p>
             </div>
         </div>
@@ -88,17 +104,26 @@
             <button class="dropdown-toggle">Diskussion</button>
             <div class="dropdown-content help-box" id="discussion">
                 <p>
-                    Das LSTM-Modell erkennt Muster in den Wortfolgen des Trainingskorpus und kann daraus plausible nächste Wörter ableiten.
-                    Besonders bei bekannten Formulierungen zeigt sich, dass das Modell häufig eine sinnvolle Richtung findet.
-                    Gleichzeitig wird deutlich, dass die Qualität der Vorhersage stark von Umfang und Qualität der Trainingsdaten abhängt.
-                    Bei unbekannten oder seltenen Wörtern stößt das Modell schnell an Grenzen.
-                    Die Top-k-Werte zeigen, dass das korrekte Wort nicht immer an erster Stelle steht, aber häufig unter mehreren wahrscheinlichen Kandidaten liegt.
-                    Die Perplexity macht sichtbar, wie unsicher das Modell bei der Fortsetzung von Sprache noch ist.
-                    In der automatischen Generierung wiederholt das Modell teilweise vertraute Muster aus den Trainingsdaten.
-                    Dadurch wird auch das Risiko der Datenrekonstruktion sichtbar, insbesondere bei kleinen oder sensiblen Trainingskorpora.
-                    Für produktive Anwendungen müssten Trainingsdaten daher sorgfältig geprüft, anonymisiert und begrenzt werden.
-                    Insgesamt zeigt die Anwendung, wie ein rekurrentes Sprachmodell Sprache nicht versteht, sondern statistische Muster aus Wortfolgen lernt.
-                </p>
+    Das LSTM-Modell erkennt statistische Muster innerhalb der Wortfolgen des Trainingskorpus
+    und kann daraus plausible nächste Wörter ableiten.
+    Besonders bei bekannten Satzstrukturen entstehen häufig sinnvolle Vorhersagen.
+
+    Gleichzeitig zeigt sich deutlich, dass die Qualität der Ergebnisse stark vom Umfang
+    und der Vielfalt der Trainingsdaten abhängt.
+    Kleine Trainingskorpora führen schneller zu Wiederholungen oder eingeschränkten Wortkombinationen.
+
+    Durch das Training mit dem Märchen <em>Der Froschkönig</em> übernimmt das Modell teilweise
+    märchenhafte Formulierungen und sprachliche Besonderheiten aus den Trainingsdaten.
+
+    Die Top-k-Evaluation zeigt, dass das korrekte nächste Wort häufig nicht direkt an erster Stelle,
+    aber oft innerhalb der wahrscheinlichsten Kandidaten liegt.
+    Die zusätzliche Berechnung der Perplexity macht sichtbar,
+    wie sicher beziehungsweise unsicher das Modell bei der Wortvorhersage ist.
+
+    Insgesamt verdeutlicht die Anwendung,
+    dass ein rekurrentes Sprachmodell Sprache nicht versteht,
+    sondern Wahrscheinlichkeiten und Muster aus Wortfolgen lernt.
+            </p>
             </div>
         </div>
 
@@ -108,14 +133,17 @@
 
                 <h3>Technische Umsetzung</h3>
                 <p>
-                    Die Anwendung verbindet eine HTML- und CSS-Oberfläche mit JavaScript und TensorFlow.js.
-                    Das LSTM-Modell wird vollständig im Browser erstellt, trainiert und anschließend für die Wortvorhersage genutzt.
-                    Die Trainingsdaten werden lokal aus einer Textdatei geladen, bereinigt, in Wortsequenzen zerlegt und als One-Hot-Vektoren verarbeitet.
-                    <p>
-    Der ursprüngliche Trainingskorpus wurde reduziert, um die browserbasierte Ausführung performant und interaktiv nutzbar zu halten.
-    Große Wortmengen und ein umfangreiches Vokabular führten durch das verwendete One-Hot-Encoding zu deutlich längeren Trainingszeiten und höherem Speicherverbrauch.
-    Die finale Variante verwendet daher einen kleineren Textausschnitt, der stabile Ergebnisse bei gleichzeitig guter Nutzbarkeit ermöglicht.
-</p>
+                    Die Anwendung kombiniert HTML, CSS, JavaScript und TensorFlow.js,
+                    um ein einfaches Language Model direkt im Browser zu trainieren und auszuführen.
+
+                    Die Trainingsdaten werden lokal geladen, bereinigt,
+                    in Wortsequenzen zerlegt und anschließend als One-Hot-Vektoren verarbeitet.
+                    Das trainierte LSTM-Modell wird danach für die Wortvorhersage genutzt.
+
+                    Um eine stabile browserbasierte Ausführung zu ermöglichen,
+                    wurde ein kleinerer Trainingskorpus verwendet.
+                    Große Wortmengen und ein umfangreiches Vokabular führten durch das verwendete One-Hot-Encoding
+                    zu längeren Trainingszeiten und höherem Speicherverbrauch.
                 </p>
 
                 <h3>Modellarchitektur</h3>
@@ -145,9 +173,20 @@
 
                 <h3>Interaktion und Fehlerbehandlung</h3>
                 <p>
-                    Die Oberfläche unterstützt Vorhersage, manuelle Auswahl eines vorgeschlagenen Wortes, schrittweise Textgenerierung, automatische Generierung, Stopp und Reset.
-                    Eingaben mit zu wenigen Wörtern oder unbekannten Begriffen werden abgefangen und dem Nutzer als verständliche Meldung angezeigt.
-                    Während des Trainings sind die Interaktionsbuttons deaktiviert, damit keine Vorhersage vor Abschluss des Trainings gestartet wird.
+                    Die Oberfläche unterstützt manuelle Wortvorhersagen,
+                    die Auswahl vorgeschlagener Wörter,
+                    automatische Textgenerierung,
+                    Stopp sowie Reset.
+
+                    Vorhersagen sind bereits ab dem ersten eingegebenen Wort möglich.
+                    Fehlende Kontextwörter werden intern ergänzt,
+                    damit das Modell weiterhin mit Sequenzen fester Länge arbeiten kann.
+
+                    Unbekannte Wörter werden erkannt und dem Nutzer als Hinweis angezeigt,
+                    ohne die Vorhersage vollständig abzubrechen.
+
+                    Während des Trainings bleiben die Interaktionsbuttons deaktiviert,
+                    damit keine Vorhersagen vor Abschluss des Trainings erfolgen können.
                 </p>
 
                 <h3>Datenschutz und Sicherheit</h3>
