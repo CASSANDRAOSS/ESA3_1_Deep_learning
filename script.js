@@ -70,7 +70,7 @@ async function loadData() {
             throw new Error("Der Trainingskorpus ist zu klein.");
         }
 
-        vocab = Array.from(new Set(words));
+        vocab = ["<unk>", ...Array.from(new Set(words))];
 
         vocab.forEach((word, idx) => {
             word2idx[word] = idx;
@@ -277,12 +277,12 @@ function predictNextWord(inputText, topK = 5) {
 
     if (unknownWords.length > 0) {
         showInputWarning(
-            `Folgende Wörter kennt das Modell nicht aus den Trainingsdaten: ${unknownWords.join(", ")}`
+        `Hinweis: Das Modell kennt folgende Wörter nicht aus den Trainingsdaten: ${unknownWords.join(", ")}. ` +
+        `Die Vorhersage läuft trotzdem weiter. Unbekannte Wörter werden als <unk> behandelt.`
         );
-        return [];
     }
 
-    const seq = lastWords.map(w => word2idx[w]);
+const seq = lastWords.map(w => word2idx[w] ?? word2idx["<unk>"]);
 
     const input = tf.tensor3d([seq.map(idx => {
         const oneHot = new Array(vocab.length).fill(0);
@@ -503,7 +503,7 @@ async function runTraining() {
         computeTopKAccuracy(X_tensor, y_tensor);
         computePerplexity(X_tensor, y_tensor);
 
-        statusDiv.textContent = "Modell bereit. Gib mindestens ein bekanntes Wort ein.";
+        statusDiv.textContent = "Modell bereit. Gib mindestens ein vollständiges Wort ein.";
         if (trainingStatusDiv) {
             trainingStatusDiv.textContent = "Modell bereit. Training und Auswertung wurden abgeschlossen.";
         }
