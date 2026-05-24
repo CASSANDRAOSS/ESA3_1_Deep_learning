@@ -70,7 +70,7 @@ async function loadData() {
             throw new Error("Der Trainingskorpus ist zu klein.");
         }
 
-        vocab = ["<unk>", ...Array.from(new Set(words))];
+        vocab = ["<pad>", "<unk>", ...Array.from(new Set(words))];
 
         vocab.forEach((word, idx) => {
             word2idx[word] = idx;
@@ -257,8 +257,11 @@ async function trainModel(X, y) {
 // VORHERSAGE
 // ------------------------------------------------------------
 function predictNextWord(inputText, topK = 5) {
+
     if (!modelReady) {
-        showInputWarning("Das Modell ist noch nicht bereit. Bitte warte, bis das Training abgeschlossen ist.");
+        showInputWarning(
+            "Das Modell ist noch nicht bereit. Bitte warte, bis das Training abgeschlossen ist."
+        );
         return [];
     }
 
@@ -269,38 +272,69 @@ function predictNextWord(inputText, topK = 5) {
         return [];
     }
 
-    const lastWords = words.slice(-sequenceLength);
+    // Letzte Wörter holen
+    let lastWords = words.slice(-sequenceLength);
+
+    // Fehlende Positionen mit <pad> auffüllen
     while (lastWords.length < sequenceLength) {
-        lastWords.unshift(words[0]);
+        lastWords.unshift("<pad>");
     }
-    const unknownWords = lastWords.filter(w => word2idx[w] === undefined);
 
+    // Unbekannte Wörter erkennen
+    const unknownWords = words.filter(
+        w => word2idx[w] === undefined
+    );
+
+    // Hinweis anzeigen, aber NICHT abbrechen
     if (unknownWords.length > 0) {
-        showInputWarning(
-        `Hinweis: Das Modell kennt folgende Wörter nicht aus den Trainingsdaten: ${unknownWords.join(", ")}. ` +
-        `Die Vorhersage läuft trotzdem weiter. Unbekannte Wörter werden als <unk> behandelt.`
-        );
+
+        statusDiv.textContent =
+            `Hinweis: Das Modell kennt folgende Wörter nicht: ${unknownWords.join(", ")}. ` +
+            `Die Vorhersage läuft trotzdem weiter.`;
+
+    } else {
+
+        statusDiv.textContent =
+            "Vorhersage erfolgreich berechnet.";
+
     }
 
-const seq = lastWords.map(w => word2idx[w] ?? word2idx["<unk>"]);
+    // Wörter in Zahlen umwandeln
+    const seq = lastWords.map(w => {
 
+        // unbekanntes Wort
+        if (word2idx[w] === undefined) {
+            return word2idx["<unk>"];
+        }
+
+        return word2idx[w];
+    });
+
+    // Tensor erzeugen
     const input = tf.tensor3d([seq.map(idx => {
+
         const oneHot = new Array(vocab.length).fill(0);
         oneHot[idx] = 1;
         return oneHot;
+
     })]);
 
+    // Vorhersage
     const probs = tf.tidy(() => {
+
         const prediction = model.predict(input);
         return prediction.dataSync();
+
     });
 
     input.dispose();
 
+    // Beste Vorhersagen holen
     const topIndices = Array.from(probs.keys())
         .sort((a, b) => probs[b] - probs[a])
         .slice(0, topK);
 
+    // Wörter zurückgeben
     return topIndices.map(idx => ({
         word: idx2word[idx],
         probability: probs[idx]
@@ -342,14 +376,30 @@ predictBtn.onclick = () => {
 };
 
 nextBtn.onclick = () => {
+
     const textArea = document.getElementById("inputText");
-    const predictions = predictNextWord(textArea.value, 1);
+
+    // Mehr Kandidaten holen
+    const predictions = predictNextWord(textArea.value, 5);
 
     if (predictions.length === 0) return;
 
-    textArea.value += " " + predictions[0].word;
+    const currentWords = cleanText(textArea.value);
+    const lastWord = currentWords[currentWords.length - 1];
 
-    const topPredictions = predictNextWord(textArea.value);
+    // Wiederholungen vermeiden
+    let selected =
+        predictions.find(p => p.word !== lastWord);
+
+    if (!selected) {
+        selected = predictions[0];
+    }
+
+    textArea.value += " " + selected.word;
+
+    const topPredictions =
+        predictNextWord(textArea.value);
+
     displayPredictions(topPredictions);
 };
 
