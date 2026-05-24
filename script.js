@@ -218,7 +218,7 @@ async function trainModel(X, y) {
     initTrainingChart();
 
     await model.fit(X, y, {
-        epochs: 20,
+        epochs: 10,
         batchSize: 32,
         shuffle: true,
         callbacks: {
@@ -236,7 +236,7 @@ async function trainModel(X, y) {
 
                 if (trainingStatusDiv) {
                     trainingStatusDiv.textContent =
-                        `Training läuft... Epoche ${currentEpoch}/20 | Loss: ${logs.loss.toFixed(4)}`;
+                        `Training läuft... Epoche ${currentEpoch}/10 | Loss: ${logs.loss.toFixed(4)}`;
                 }
 
                 if (trainingChart) {
@@ -264,12 +264,15 @@ function predictNextWord(inputText, topK = 5) {
 
     const words = cleanText(inputText);
 
-    if (words.length < sequenceLength) {
-        showInputWarning(`Bitte gib mindestens ${sequenceLength} vollständige Wörter ein.`);
+    if (words.length < 1) {
+        showInputWarning("Bitte gib mindestens ein vollständiges Wort ein.");
         return [];
     }
 
     const lastWords = words.slice(-sequenceLength);
+    while (lastWords.length < sequenceLength) {
+        lastWords.unshift(words[0]);
+    }
     const unknownWords = lastWords.filter(w => word2idx[w] === undefined);
 
     if (unknownWords.length > 0) {
@@ -500,7 +503,7 @@ async function runTraining() {
         computeTopKAccuracy(X_tensor, y_tensor);
         computePerplexity(X_tensor, y_tensor);
 
-        statusDiv.textContent = "Modell bereit. Gib mindestens fünf bekannte Wörter ein.";
+        statusDiv.textContent = "Modell bereit. Gib mindestens ein bekanntes Wort ein.";
         if (trainingStatusDiv) {
             trainingStatusDiv.textContent = "Modell bereit. Training und Auswertung wurden abgeschlossen.";
         }
