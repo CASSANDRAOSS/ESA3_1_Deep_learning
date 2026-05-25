@@ -320,9 +320,27 @@ function predictNextWord(inputText, topK = 5) {
   ]);
 
   // Vorhersage
+ // const probs = tf.tidy(() => {
+   // const prediction = model.predict(input);
+   // return prediction.dataSync();
+ // });
+
   const probs = tf.tidy(() => {
+
     const prediction = model.predict(input);
-    return prediction.dataSync();
+    const values = Array.from(prediction.dataSync());
+
+    // Häufige Stoppwörter leicht bestrafen
+    const stopWords = ["und", "die", "der", "das", "ein", "eine", "ist"];
+
+    stopWords.forEach(word => {
+      const idx = word2idx[word];
+      if (idx !== undefined) {
+        values[idx] *= 0.35;
+      }
+    });
+
+    return values;
   });
 
   input.dispose();
