@@ -320,20 +320,19 @@ function predictNextWord(inputText, topK = 5) {
   ]);
 
   // Vorhersage
- // const probs = tf.tidy(() => {
-   // const prediction = model.predict(input);
-   // return prediction.dataSync();
- // });
+  // const probs = tf.tidy(() => {
+  // const prediction = model.predict(input);
+  // return prediction.dataSync();
+  // });
 
   const probs = tf.tidy(() => {
-
     const prediction = model.predict(input);
     const values = Array.from(prediction.dataSync());
 
     // Häufige Stoppwörter leicht bestrafen
     const stopWords = ["und", "die", "der", "das", "ein", "eine", "ist"];
 
-    stopWords.forEach(word => {
+    stopWords.forEach((word) => {
       const idx = word2idx[word];
       if (idx !== undefined) {
         values[idx] *= 0.65;
@@ -392,35 +391,34 @@ predictBtn.onclick = () => {
 };
 
 function choosePrediction(predictions, text) {
-    const softBlockedWords = ["und", "die", "der", "das", "ein", "eine", "ist"];
-    const currentWords = cleanText(text);
-    const recentWords = currentWords.slice(-4);
+  const softBlockedWords = ["und", "die", "der", "das", "ein", "eine", "ist"];
+  const currentWords = cleanText(text);
+  const recentWords = currentWords.slice(-4);
 
-    let candidates = predictions.filter(p =>
-        p.word !== "<pad>" &&
-        p.word !== "<unk>" &&
-        !recentWords.includes(p.word)
+  let candidates = predictions.filter(
+    (p) =>
+      p.word !== "<pad>" && p.word !== "<unk>" && !recentWords.includes(p.word)
+  );
+
+  if (candidates.length === 0) {
+    candidates = predictions.filter(
+      (p) => p.word !== "<pad>" && p.word !== "<unk>"
     );
+  }
 
-    if (candidates.length === 0) {
-        candidates = predictions.filter(p =>
-            p.word !== "<pad>" &&
-            p.word !== "<unk>"
-        );
-    }
+  const goodCandidates = candidates.filter(
+    (p) => !softBlockedWords.includes(p.word)
+  );
 
-    const goodCandidates = candidates.filter(p =>
-        !softBlockedWords.includes(p.word)
-    );
+  if (goodCandidates.length > 0 && Math.random() < 0.7) {
+    candidates = goodCandidates;
+  }
 
-    if (goodCandidates.length > 0 && Math.random() < 0.7) {
-        candidates = goodCandidates;
-    }
-
-    const randomIndex = Math.floor(Math.random() * Math.min(3, candidates.length));
-    return candidates[randomIndex];
+  const randomIndex = Math.floor(
+    Math.random() * Math.min(3, candidates.length)
+  );
+  return candidates[randomIndex];
 }
-
 
 nextBtn.onclick = () => {
   const textArea = document.getElementById("inputText");
