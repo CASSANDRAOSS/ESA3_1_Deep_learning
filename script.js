@@ -422,7 +422,7 @@ function choosePrediction(predictions, text) {
 
 nextBtn.onclick = () => {
   const textArea = document.getElementById("inputText");
-  const predictions = predictNextWord(textArea.value, 20);
+  const predictions = predictNextWord(textArea.value, 5);
 
   if (predictions.length === 0) return;
 
@@ -449,7 +449,7 @@ autoBtn.onclick = () => {
 
     const textArea = document.getElementById("inputText");
     //const predictions = predictNextWord(textArea.value, 1);
-    const predictions = predictNextWord(textArea.value, 20);
+    const predictions = predictNextWord(textArea.value, 5);
 
     if (predictions.length === 0) {
       clearInterval(autoInterval);
