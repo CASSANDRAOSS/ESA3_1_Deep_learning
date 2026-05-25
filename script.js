@@ -16,7 +16,7 @@ let epochLabels = [];
 
 // Buttons & UI-Elemente
 const predictBtn = document.getElementById("predictBtn");
-const  = document.getElementById("");
+const nextBtn = document.getElementById("nextBtn");
 const autoBtn = document.getElementById("autoBtn");
 const stopBtn = document.getElementById("stopBtn");
 const resetBtn = document.getElementById("resetBtn");
@@ -26,7 +26,7 @@ const resultsDiv = document.getElementById("results");
 const trainingStatusDiv = document.getElementById("trainingStatus");
 
 function setButtonsEnabled(enabled) {
-  [predictBtn, , autoBtn, stopBtn, resetBtn].forEach((btn) => {
+  [predictBtn, nextBtn, autoBtn, stopBtn, resetBtn].forEach((btn) => {
     btn.disabled = !enabled;
   });
 }
@@ -77,16 +77,10 @@ async function loadData() {
       idx2word[idx] = word;
     });
 
-    for (let i = 0; i < words.length - 1; i++) {
-      for (let len = 1; len <= sequenceLength; len++) {
-        if (i + len >= words.length) break;
-        let seq = words.slice(i, i + len);
-        while (seq.length < sequenceLength) {
-          seq.unshift("<pad>");
-        }
-        sequences.push(seq.map((w) => word2idx[w]));
-        nextWords.push(word2idx[words[i + len]]);
-      }
+    for (let i = 0; i <= words.length - sequenceLength - 1; i++) {
+      const seq = words.slice(i, i + sequenceLength);
+      sequences.push(seq.map((w) => word2idx[w]));
+      nextWords.push(word2idx[words[i + sequenceLength]]);
     }
 
     console.log(`Vokabulargröße: ${vocab.length}`);
@@ -341,7 +335,7 @@ function predictNextWord(inputText, topK = 5) {
     stopWords.forEach((word) => {
       const idx = word2idx[word];
       if (idx !== undefined) {
-        values[idx] *= 0.85;
+        values[idx] *= 0.65;
       }
     });
 
@@ -428,15 +422,15 @@ function choosePrediction(predictions, text) {
 
 nextBtn.onclick = () => {
   const textArea = document.getElementById("inputText");
-  const predictions = predictNextWord(textArea.value, 5);
+  const predictions = predictNextWord(textArea.value, 20);
 
   if (predictions.length === 0) return;
 
-  const selected = predictions[0];
+  const selected = choosePrediction(predictions, textArea.value);
 
   textArea.value = textArea.value.trim() + " " + selected.word;
 
-  const topPredictions = predictNextWord(textArea.value, 5);
+  const topPredictions = predictNextWord(textArea.value);
   displayPredictions(topPredictions);
 };
 
