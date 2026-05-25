@@ -57,7 +57,7 @@ function clearPredictions() {
 // ------------------------------------------------------------
 async function loadData() {
     try {
-        const response = await fetch("data/2.text_corpus.txt");
+        const response = await fetch("data/3.text_corpus.txt");
 
         if (!response.ok) {
             throw new Error("Trainingsdatei konnte nicht geladen werden.");
