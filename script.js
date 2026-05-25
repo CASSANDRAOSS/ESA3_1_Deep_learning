@@ -336,7 +336,7 @@ function predictNextWord(inputText, topK = 5) {
     stopWords.forEach(word => {
       const idx = word2idx[word];
       if (idx !== undefined) {
-        values[idx] *= 0.35;
+        values[idx] *= 0.65;
       }
     });
 
@@ -392,31 +392,35 @@ predictBtn.onclick = () => {
 };
 
 function choosePrediction(predictions, text) {
-    const blockedWords = ["und", "die", "der", "das", "ein", "eine", "ist"];
+    const softBlockedWords = ["und", "die", "der", "das", "ein", "eine", "ist"];
     const currentWords = cleanText(text);
-    const recentWords = currentWords.slice(-5);
+    const recentWords = currentWords.slice(-4);
 
     let candidates = predictions.filter(p =>
-        !blockedWords.includes(p.word) &&
-        !recentWords.includes(p.word) &&
         p.word !== "<pad>" &&
-        p.word !== "<unk>"
+        p.word !== "<unk>" &&
+        !recentWords.includes(p.word)
     );
 
     if (candidates.length === 0) {
         candidates = predictions.filter(p =>
-            !recentWords.includes(p.word) &&
             p.word !== "<pad>" &&
             p.word !== "<unk>"
         );
     }
 
-    if (candidates.length === 0) {
-        candidates = predictions;
+    const goodCandidates = candidates.filter(p =>
+        !softBlockedWords.includes(p.word)
+    );
+
+    if (goodCandidates.length > 0 && Math.random() < 0.7) {
+        candidates = goodCandidates;
     }
 
-    return candidates[0];
+    const randomIndex = Math.floor(Math.random() * Math.min(3, candidates.length));
+    return candidates[randomIndex];
 }
+
 
 nextBtn.onclick = () => {
   const textArea = document.getElementById("inputText");
