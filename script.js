@@ -16,7 +16,7 @@ let epochLabels = [];
 
 // Buttons & UI-Elemente
 const predictBtn = document.getElementById("predictBtn");
-const nextBtn = document.getElementById("nextBtn");
+const  = document.getElementById("");
 const autoBtn = document.getElementById("autoBtn");
 const stopBtn = document.getElementById("stopBtn");
 const resetBtn = document.getElementById("resetBtn");
@@ -26,7 +26,7 @@ const resultsDiv = document.getElementById("results");
 const trainingStatusDiv = document.getElementById("trainingStatus");
 
 function setButtonsEnabled(enabled) {
-  [predictBtn, nextBtn, autoBtn, stopBtn, resetBtn].forEach((btn) => {
+  [predictBtn, , autoBtn, stopBtn, resetBtn].forEach((btn) => {
     btn.disabled = !enabled;
   });
 }
@@ -429,15 +429,14 @@ function choosePrediction(predictions, text) {
 nextBtn.onclick = () => {
   const textArea = document.getElementById("inputText");
   const predictions = predictNextWord(textArea.value, 5);
-  const selected = predictions[0];
 
   if (predictions.length === 0) return;
 
-  const selected = choosePrediction(predictions, textArea.value);
+  const selected = predictions[0];
 
   textArea.value = textArea.value.trim() + " " + selected.word;
 
-  const topPredictions = predictNextWord(textArea.value);
+  const topPredictions = predictNextWord(textArea.value, 5);
   displayPredictions(topPredictions);
 };
 
