@@ -28,11 +28,11 @@
             Bereits ab dem ersten eingegebenen Wort versucht das Modell, das wahrscheinlich nächste Wort vorherzusagen. Mit zunehmendem Kontext werden die Vorhersagen meist präziser.
             
             Trainiert wurde das Modell mit einem Auszug aus meiner Hausarbeit bei Codierung Multimedialer Daten.
-            Dadurch wirken manche Vorhersagen leicht astronimisch oder sprachlich ungewöhnlich.
+            Dadurch wirken manche Vorhersagen leicht astronomisch oder sprachlich ungewöhnlich.
         </p>
 
         <label for="inputText"><strong>Eingabetext</strong></label>
-        <textarea id="inputText" rows="5" placeholder="Modell bereit. Gib mindestens ein vollständiges Wort ein."></textarea>
+        <textarea id="inputText" rows="5" placeholder="Gib mindestens ein vollständiges Wort ein."></textarea>
 
         <div class="button-row">
             <button id="predictBtn">Vorhersage</button>
@@ -85,11 +85,6 @@
                     </li>
                 </ul>
                 <p>
-                    Das Modell wurde mit dem Märchen <em>Der Froschkönig</em> trainiert.
-                    Dadurch können manche Vorhersagen märchenhaft oder sprachlich ungewöhnlich wirken.
-                </p>
-
-                <p>
                     Unbekannte Wörter werden erkannt und als Hinweis angezeigt.
                     Die Vorhersage wird dennoch fortgesetzt.
                 </p>
@@ -100,25 +95,33 @@
             <button class="dropdown-toggle">Diskussion</button>
             <div class="dropdown-content help-box" id="discussion">
                 <p>
-    Das LSTM-Modell erkennt statistische Muster innerhalb der Wortfolgen des Trainingskorpus
-    und kann daraus plausible nächste Wörter ableiten.
-    Besonders bei bekannten Satzstrukturen entstehen häufig sinnvolle Vorhersagen.
+            Das LSTM-Modell erkennt statistische Muster innerhalb der Wortfolgen des Trainingskorpus
+            und kann daraus plausible nächste Wörter ableiten.
+            Besonders bei bekannten Satzstrukturen entstehen häufig sinnvolle Vorhersagen.
 
-    Gleichzeitig zeigt sich deutlich, dass die Qualität der Ergebnisse stark vom Umfang
-    und der Vielfalt der Trainingsdaten abhängt.
-    Kleine Trainingskorpora führen schneller zu Wiederholungen oder eingeschränkten Wortkombinationen.
+            Gleichzeitig zeigt sich deutlich, dass die Qualität der Ergebnisse stark vom Umfang
+            und der Vielfalt der Trainingsdaten abhängt.
+            Kleine Trainingskorpora führen schneller zu Wiederholungen oder eingeschränkten Wortkombinationen.
 
-    Durch das Training mit dem Märchen <em>Der Froschkönig</em> übernimmt das Modell teilweise
-    märchenhafte Formulierungen und sprachliche Besonderheiten aus den Trainingsdaten.
+            Im Verlauf der Experimente wurden verschiedene Trainingskorpora getestet,
+            darunter <em>Faust – Der Tragödie erster Teil</em>,
+            das Märchen <em>Der Froschkönig</em>
+            sowie schließlich ein Auszug aus einer eigenen Hausarbeit.
 
-    Die Top-k-Evaluation zeigt, dass das korrekte nächste Wort häufig nicht direkt an erster Stelle,
-    aber oft innerhalb der wahrscheinlichsten Kandidaten liegt.
-    Die zusätzliche Berechnung der Perplexity macht sichtbar,
-    wie sicher beziehungsweise unsicher das Modell bei der Wortvorhersage ist.
+            Dabei zeigte das Modell trotz unterschiedlicher Texte eine auffällige Tendenz,
+            besonders häufige Wörter wie „und“, „die“ oder „der“ zu bevorzugen.
+            Dieses Verhalten verdeutlicht gut,
+            dass kleine Sprachmodelle vor allem statistische Häufigkeiten lernen
+            und kein echtes Sprachverständnis besitzen.
 
-    Insgesamt verdeutlicht die Anwendung,
-    dass ein rekurrentes Sprachmodell Sprache nicht versteht,
-    sondern Wahrscheinlichkeiten und Muster aus Wortfolgen lernt.
+            Die Top-k-Evaluation zeigt, dass das korrekte nächste Wort häufig nicht direkt an erster Stelle,
+            aber oft innerhalb der wahrscheinlichsten Kandidaten liegt.
+            Die zusätzliche Berechnung der Perplexity macht sichtbar,
+            wie sicher beziehungsweise unsicher das Modell bei der Wortvorhersage ist.
+
+            Insgesamt verdeutlicht die Anwendung,
+            dass rekurrente Sprachmodelle Sprache nicht verstehen,
+            sondern Wahrscheinlichkeiten und Muster aus Wortfolgen lernen.
             </p>
             </div>
         </div>
