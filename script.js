@@ -375,31 +375,35 @@ predictBtn.onclick = () => {
     }
 };
 
+
+
+function choosePrediction(predictions, text) {
+    const currentWords = cleanText(text);
+    const recentWords = currentWords.slice(-4);
+
+    const filtered = predictions.filter(p =>
+        !recentWords.includes(p.word) &&
+        p.word !== "<pad>" &&
+        p.word !== "<unk>"
+    );
+
+    const candidates = filtered.length > 0 ? filtered : predictions;
+
+    const randomIndex = Math.floor(Math.random() * Math.min(3, candidates.length));
+    return candidates[randomIndex];
+}
+
 nextBtn.onclick = () => {
-
     const textArea = document.getElementById("inputText");
-
-    // Mehr Kandidaten holen
     const predictions = predictNextWord(textArea.value, 5);
 
     if (predictions.length === 0) return;
 
-    const currentWords = cleanText(textArea.value);
-    const lastWord = currentWords[currentWords.length - 1];
+    const selected = choosePrediction(predictions, textArea.value);
 
-    // Wiederholungen vermeiden
-    let selected =
-        predictions.find(p => p.word !== lastWord);
+    textArea.value = textArea.value.trim() + " " + selected.word;
 
-    if (!selected) {
-        selected = predictions[0];
-    }
-
-    textArea.value += " " + selected.word;
-
-    const topPredictions =
-        predictNextWord(textArea.value);
-
+    const topPredictions = predictNextWord(textArea.value);
     displayPredictions(topPredictions);
 };
 
@@ -417,7 +421,8 @@ autoBtn.onclick = () => {
         }
 
         const textArea = document.getElementById("inputText");
-        const predictions = predictNextWord(textArea.value, 1);
+        //const predictions = predictNextWord(textArea.value, 1);
+        const predictions = predictNextWord(textArea.value, 5);
 
         if (predictions.length === 0) {
             clearInterval(autoInterval);
@@ -426,8 +431,10 @@ autoBtn.onclick = () => {
         }
 
         // textArea.value += " " + predictions[0].word;
-        const randomIndex = Math.floor(Math.random() * Math.min(3, predictions.length));
-        textArea.value += " " + predictions[randomIndex].word;
+        //const randomIndex = Math.floor(Math.random() * Math.min(3, predictions.length));
+        //textArea.value += " " + predictions[randomIndex].word;
+        const selected = choosePrediction(predictions, textArea.value);
+        textArea.value = textArea.value.trim() + " " + selected.word;
 
         const topPredictions = predictNextWord(textArea.value);
         displayPredictions(topPredictions);
